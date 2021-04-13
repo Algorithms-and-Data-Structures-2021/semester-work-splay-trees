@@ -28,13 +28,13 @@ int main(int argc, char* argv[])
 		{
 			case 'S':
 			case 's':
-				root = Search(input, root);
+				root = Find(input, root);
 				std::cout<<"\nAfter Search "<<input<<std::endl;
 				InOrder(root);
 				break;
             case 'D':
 			case 'd':
-				root = Delete(input, root);
+				root = Remove(input, root);
 				std::cout<<"\nAfter Delete: "<<input<<std::endl;
 				InOrder(root);
 				break;
@@ -48,6 +48,5 @@ int main(int argc, char* argv[])
 				std::cout<<"\nInvalid type! type could only be s/S, i/I, d/D.\n";
 		}
 	}
-	std::cout<<"\n";
-	return 0;
+
 }

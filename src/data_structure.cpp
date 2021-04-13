@@ -6,7 +6,7 @@
 
 namespace itis {
 
-/* RR(Y rotates to the right):
+/* Right_Rotate(Y поворачивается вправо):
         k2                   k1
        /  \                 /  \
       k1   Z     ==>       X   k2
@@ -21,7 +21,7 @@ inline splay* Right_Rotate(splay* k2)
 	return k1;
 }
 
-/* LR(Y rotates to the left):
+/* Left_Rotate(Y поворачивается влево):
         k2                       k1
        /  \                     /  \
       X    k1         ==>      k2   Z
@@ -36,41 +36,31 @@ inline splay* Left_Rotate(splay* k2)
 	return k1;
 }
 
-/* An implementation of top-down splay tree
- If key is in the tree, then the node containing the key will be rotated to root,
- else the last non-NULL node (on the search path) will be rotated to root.
- */
-splay* Splaying(int key, splay* root)
+splay* Splay(int key, splay* root)
 {
-	if(!root)
+	if(root == nullptr) {
 		return NULL;
+}
 	splay header;
-	/* header.rchild points to L tree; header.lchild points to R Tree */
 	header.lchild = header.rchild = NULL;
 	splay* LeftTreeMax = &header;
 	splay* RightTreeMin = &header;
 
-	/* loop until root->lchild == NULL || root->rchild == NULL; then break!
-	   (or when find the key, break too.)
-	 The zig/zag mode would only happen when cannot find key and will reach
-	 null on one side after RR or LL Rotation.
-	 */
-	while(1)
+	while(true)
 	{
 		if(key < root->key)
 		{
-			if(!root->lchild)
+			if(root->lchild == nullptr) {
 				break;
+}
 			if(key < root->lchild->key)
 			{
-				root = Right_Rotate(root); /* only zig-zig mode need to rotate once,
-										   because zig-zag mode is handled as zig
-										   mode, which doesn't require rotate,
-										   just linking it to R Tree */
-				if(!root->lchild)
+				root = Right_Rotate(root);
+				if(root->lchild == nullptr) {
 					break;
+}
 			}
-			/* Link to R Tree */
+
 			RightTreeMin->lchild = root;
 			RightTreeMin = RightTreeMin->lchild;
 			root = root->lchild;
@@ -78,27 +68,26 @@ splay* Splaying(int key, splay* root)
 		}
 		else if(key > root->key)
 		{
-			if(!root->rchild)
+			if(root->rchild == nullptr) {
 				break;
+}
 			if(key > root->rchild->key)
 			{
-				root = Left_Rotate(root);/* only zag-zag mode need to rotate once,
-										  because zag-zig mode is handled as zag
-										  mode, which doesn't require rotate,
-										  just linking it to L Tree */
-				if(!root->rchild)
+				root = Left_Rotate(root);
+				if(root->rchild == nullptr) {
 					break;
+}
 			}
-			/* Link to L Tree */
+
 			LeftTreeMax->rchild = root;
 			LeftTreeMax = LeftTreeMax->rchild;
 			root = root->rchild;
 			LeftTreeMax->rchild = NULL;
 		}
-		else
+		else {
 			break;
+}
 	}
-	/* assemble L Tree, Middle Tree and R tree together */
 	LeftTreeMax->rchild = root->lchild;
 	RightTreeMin->lchild = root->rchild;
 	root->lchild = header.rchild;
@@ -109,41 +98,28 @@ splay* Splaying(int key, splay* root)
 
 splay* New_Node(KEY_TYPE key)
 {
-	splay* p_node = new splay;
-	if(!p_node)
-	{
-		fprintf(stderr, "Out of memory!\n");
-		exit(1);
-	}
-	p_node->key = key;
+	auto* p_node = new splay;
+  p_node->key = key;
 	p_node->lchild = p_node->rchild = NULL;
 	return p_node;
 }
 
-/* Implementation 1:
-   First Splay(key, root)(and assume the tree we get is called *), so root node and
-   its left child tree will contain nodes with keys <= key, so we could rebuild
-   the tree, using the newly alloced node as a root, the children of original tree
-   *(including root node of *) as this new node's children.
-NOTE: This implementation is much better! Reasons are as follows in implementation 2.
-NOTE: This implementation of splay tree doesn't allow nodes of duplicate keys!
- */
 splay* Insert(KEY_TYPE key, splay* root)
 {
-	static splay* p_node = NULL;
-	if(!p_node)
+  static splay* p_node;
+  p_node = NULL;
+  if(p_node == nullptr) {
 		p_node = New_Node(key);
-	else // could take advantage of the node remains because of there was duplicate key before.
+	} else {
 		p_node->key = key;
-	if(!root)
+}
+	if(root == nullptr)
 	{
 		root = p_node;
 		p_node = NULL;
 		return root;
 	}
-	root = Splaying(key, root);
-	/* This is BST that, all keys <= root->key is in root->lchild, all keys >
-	   root->key is in root->rchild. (This BST doesn't allow duplicate keys.) */
+	root = Splay(key, root);
 	if(key < root->key)
 	{
 		p_node->lchild = root->lchild;
@@ -158,117 +134,52 @@ splay* Insert(KEY_TYPE key, splay* root)
 		root->rchild = NULL;
 		root = p_node;
 	}
-	else
+	else {
 		return root;
+}
 	p_node = NULL;
 	return root;
 }
 
-/*
- Implementation 2:
- First do the insertion as a BST insertion, then splay(key, root).
-Note: Implementation 1 & Implementation 2 will lead to different splay trees.
-This implementation is NOT recommend! because it needs first to go down to insert
-a node, which requires O(h). Since splay tree is not balanced, so there does exist
-bad insertion sequence which will lead insertion to O(n) each time(so O(n) in
-amortized time).
-But in implementation 1, the time complexity is up to Splay() during one insertion.
-So the amortized time of insertion is O(logn).
- */
-/*
-splay* Insert(KEY_TYPE key, splay* root)
-{
-	splay* p_node = New_Node(key);
-	if(!root)
-		return p_node;
-	splay* parent_temp;
-	splay* temp = root;
-	while(temp)
-	{
-		parent_temp = temp;
-		if(key <= temp->key)
-			temp = temp->lchild;
-		else
-			temp = temp->rchild;
-	}
-	if(key <= parent_temp->key)
-		parent_temp->lchild = p_node;
-	else
-		parent_temp->rchild = p_node;
 
-	return (root=Splay(key, root));
-}
-*/
-
-
-/*
-Implementation: just Splay(key, root), if key doesn't exist in the tree(key !=
-root->key), return root directly; else join the root->lchild and root->rchild
-and then free(old_root).
-To join T1 and T2 (where all elements in T1 < any element in T2) is easy if we
-have the largest element in T1 as T1's root, and here's a trick to simplify code,
-see "Note" below.
- */
-splay* Delete(KEY_TYPE key, splay* root)
+splay* Remove(KEY_TYPE key, splay* root)
 {
 	splay* temp;
-	if(!root)
+	if(root == nullptr) {
 		return NULL;
-	root = Splaying(key, root);
-	if(key != root->key) // No such node in splay tree
-		return root;
-	else
-	{
-		if(!root->lchild)
-		{
-			temp = root;
-			root = root->rchild;
-		}
-		else
-		{
-			temp = root;
-			/*Note: Since key == root->key, so after Splay(key, root->lchild),
-			  the tree we get will have no right child tree. (key > any key in
-			  root->lchild)*/
-			root = Splaying(key, root->lchild);
-			root->rchild = temp->rchild;
-		}
-		free(temp);
+}
+	root = Splay(key, root);
+	if(key != root->key) {
 		return root;
 	}
+  if (root->lchild != nullptr) {
+    temp = root;
+    root = Splay(key, root->lchild);
+    root->rchild = temp->rchild;
+  } else {
+    temp = root;
+    root = root->rchild;
+  }
+  free(temp);
+  return root;
+
 }
 
-splay* Search(KEY_TYPE key, splay* root) {
-	return Splaying(key, root);
+splay* Find(KEY_TYPE key, splay* root) {
+	return Splay(key, root);
 }
-
-//def Split(splay* root, KEY_TYPE key) {
-//  if (root) {
-//  }
-//  root = Search(root, key)
-//  if root.key == key:
-//    set_parent(root.left, None)
-//    set_parent(root.right, None)
-//    return root.left, root.right
-//  if root.key < key:
-//    right, root.right = root.right, None
-//    set_parent(right, None)
-//    return root, right
-//  else:
-//    left, root.left = root.left, None
-//    set_parent(left, None)
-//    return left, root
-//}
 
 void InOrder(splay* root) {
-	if(root)
+	if(root != nullptr)
 	{
 		InOrder(root->lchild);
 		std::cout<< "key: " <<root->key;
-		if(root->lchild)
+		if(root->lchild != nullptr) {
 			std::cout<< " | left child: "<< root->lchild->key;
-		if(root->rchild)
+}
+		if(root->rchild != nullptr) {
 			std::cout << " | right child: " << root->rchild->key;
+}
 		std::cout<< "\n";
 		InOrder(root->rchild);
 	}
