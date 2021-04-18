@@ -4,6 +4,7 @@
 #include <string_view>  // string_view
 #include <chrono>       // high_resolution_clock, duration_cast, nanoseconds
 #include <sstream>      // stringstream
+#include "data_structure.hpp"
 
 // подключаем вашу структуру данных
 #include "data_structure.hpp"
@@ -43,7 +44,7 @@ int main(int argc, char **argv) {
   auto input_file = ifstream(path + "/dataset-example.csv");
 
   if (input_file) {
-    // чтение и обработка набора данных ...
+    SplayTree::find();
   }
 
   // Контрольный тест: операции добавления, удаления, поиска и пр. над структурой данных

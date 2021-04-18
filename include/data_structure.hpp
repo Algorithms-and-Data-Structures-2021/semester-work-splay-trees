@@ -1,34 +1,27 @@
 #pragma once
-
+#include "node.hpp"
 // Заголовочный файл с объявлением структуры данных
 
 namespace itis {
 
-  typedef int KEY_TYPE;
+  struct SplayTree {
+   public:
+    Node *root;
 
-  typedef struct splay{
+    static void zig(Node *node);
+    static void zig_zig(Node *node);
+    static void zig_zag(Node *node);
+    void splay(Node *x);
 
-  	  KEY_TYPE key;
-  	  struct splay* lchild;
-	  struct splay* rchild;
+    SplayTree();
+    explicit SplayTree(Node *node);
+    Node *find(int index);
+    void insert(int index);
+    void remove(int index);
+    void split(Node *node);
+    Node *merge(SplayTree *s, SplayTree *t);
+    void prettyPrint(Node *node);
+    ~SplayTree();
+  };
 
-  } splay;
-
-  splay* New_Node(KEY_TYPE key);
-
-  inline splay* Right_Rotate(splay* k2);
-
-  inline splay* Left_Rotate(splay* k2);
-
-  splay* Splay(int key, splay* root);//+
-
-  splay* Insert(KEY_TYPE key, splay* root);//+
-
-  splay* Remove(KEY_TYPE key, splay* root);//+
-
-  splay* Find(KEY_TYPE key, splay* root);//+
-
-  void InOrder(splay* root);
-
-  //отсутствуют методы merge, split
-}
+}  // namespace itis
