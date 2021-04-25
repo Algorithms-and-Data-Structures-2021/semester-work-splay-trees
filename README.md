@@ -97,7 +97,7 @@ _Опишите процесс сборки проекта._
 возможности IDE):
 
 ```shell
-git clone https://github.com/Algorithms-and-Data-Structures-2021/semester-work-template.git
+https://github.com/Algorithms-and-Data-Structures-2021/semestr-work-splay-trees
 ```
 
 Для ручной сборки проекта в терминале введите:
