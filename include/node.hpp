@@ -8,11 +8,7 @@ namespace itis {
     Node *left_child;
     Node *right_child;
 
-    explicit Node(int node_key) {
-      this->data = node_key;
-      this->parent = nullptr;
-      this->left_child = nullptr;
-      this->right_child = nullptr;
+    explicit Node(int node_key) : data(node_key), parent(nullptr), left_child(nullptr), right_child(nullptr) {
     }
   };
 }  // namespace itis

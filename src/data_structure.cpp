@@ -23,9 +23,7 @@ namespace itis {
     }
   }
 
-  SplayTree::SplayTree(Node *tree_root) {
-    this->root = tree_root;
-  }
+  SplayTree::SplayTree(Node *tree_root) : root(tree_root) {}
 
   SplayTree::~SplayTree() {
     Node *curr = this->root;
@@ -265,9 +263,9 @@ namespace itis {
           splay(new_node);
           this->root = new_node;
           return;
-        } else {
-          curr = curr->left_child;
         }
+        curr = curr->left_child;
+
       } else if (x >= curr->data) {
         if (curr->right_child == nullptr) {
           Node *new_node = new Node(x);
@@ -309,23 +307,7 @@ namespace itis {
     return ret;
   }
 
-  void SplayTree::split(Node *x) {
-    splay(x);
-    Node *s = nullptr;
-    Node *t = nullptr;
-    if (x->right_child) {
-      t = x->right_child;
-      t->parent = nullptr;
-    } else {
-      t = nullptr;
-    }
-    s = x;
-    s->right_child = nullptr;
-    x = nullptr;
-  }
-
-  // можно удалить ?
-  void SplayTree::prettyPrint(Node *vertex) {
+  void SplayTree:: Print(Node *vertex) {
     if (vertex->left_child != nullptr && vertex->right_child != nullptr) {
       std::cout << vertex->data << ": " << vertex->left_child->data << ", " << vertex->right_child->data << std::endl;
     } else if (vertex->left_child != nullptr) {
@@ -336,12 +318,12 @@ namespace itis {
       std::cout << vertex->data << ": no children" << std::endl;
     }
     if (vertex->left_child != nullptr && vertex->right_child != nullptr) {
-      prettyPrint(vertex->left_child);
-      prettyPrint(vertex->right_child);
+      Print(vertex->left_child);
+      Print(vertex->right_child);
     } else if (vertex->left_child != nullptr) {
-      prettyPrint(vertex->left_child);
+      Print(vertex->left_child);
     } else if (vertex->right_child != nullptr) {
-      prettyPrint(vertex->right_child);
+      Print(vertex->right_child);
     }
   }
 

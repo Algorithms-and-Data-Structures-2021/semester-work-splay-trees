@@ -19,8 +19,7 @@ namespace itis {
     void insert(int x);
     void remove(int x);
     void Clear(Node *x);
-    void split(Node *x);
-    void prettyPrint(Node *x);
+    void Print(Node *x);
     ~SplayTree() ;
   };
 
