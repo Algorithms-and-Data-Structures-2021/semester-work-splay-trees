@@ -3,189 +3,13 @@
 
 namespace itis {
 
-  SplayTree::SplayTree() {
-    this->root = nullptr;
-  }
+  SplayTree::SplayTree() : way(nullptr) {}
+  SplayTree::SplayTree(Node *tree_root) : way(tree_root) {}
 
-  void SplayTree::Clear(Node *x) {
-    if (x->left_child != nullptr || x->right_child != nullptr) {
-      if (x->left_child != nullptr && x->right_child == nullptr) {
-        Clear(x->left_child);
-        delete x;
-      } else if (x->left_child == nullptr && x->right_child != nullptr) {
-        Clear(x->right_child);
-        delete x;
-      } else {
-        Clear(x->left_child);
-      }
-    } else {
-      delete x;
-    }
-  }
-
-  SplayTree::SplayTree(Node *tree_root) : root(tree_root) {}
-
+  // Диструктор. В нём дерево удаляется путём удаления начального узла
   SplayTree::~SplayTree() {
-    Node *curr = this->root;
+    Node *curr = this->way;
     Clear(curr);
-  }
-
-  void SplayTree::zig(Node *x) {
-    Node *parent_node = x->parent;
-
-    if (parent_node->left_child == x) {
-      Node *A = x->right_child;
-
-      x->parent = nullptr;
-      x->right_child = parent_node;
-
-      parent_node->parent = x;
-      parent_node->left_child = A;
-
-      if (A != nullptr) {
-        A->parent = parent_node;
-      }
-    } else {
-      Node *A = x->left_child;
-
-      x->parent = nullptr;
-      x->left_child = parent_node;
-
-      parent_node->parent = x;
-      parent_node->right_child = A;
-
-      if (A != nullptr) {
-        A->parent = parent_node;
-      }
-    }
-  }
-
-  void SplayTree::zig_zig(Node *x) {
-    Node *parent_node = x->parent;
-    Node *grandparent_node = parent_node->parent;
-
-    if (parent_node->left_child == x) {
-      Node *A = x->right_child;
-      Node *B = parent_node->right_child;
-
-      x->parent = grandparent_node->parent;
-      x->right_child = parent_node;
-
-      parent_node->parent = x;
-      parent_node->left_child = A;
-      parent_node->right_child = grandparent_node;
-
-      grandparent_node->parent = parent_node;
-      grandparent_node->left_child = B;
-
-      if (x->parent != nullptr) {
-        if (x->parent->left_child == grandparent_node) {
-          x->parent->left_child = x;
-        } else {
-          x->parent->right_child = x;
-        }
-      }
-      if (A != nullptr) {
-        A->parent = parent_node;
-      }
-      if (B != nullptr) {
-        B->parent = grandparent_node;
-      }
-    } else {
-      Node *A = parent_node->left_child;
-      Node *B = x->left_child;
-
-      x->parent = grandparent_node->parent;
-      x->left_child = parent_node;
-
-      parent_node->parent = x;
-      parent_node->left_child = grandparent_node;
-      parent_node->right_child = B;
-
-      grandparent_node->parent = parent_node;
-      grandparent_node->right_child = A;
-
-      if (x->parent != nullptr) {
-        if (x->parent->left_child == grandparent_node) {
-          x->parent->left_child = x;
-        } else {
-          x->parent->right_child = x;
-        }
-      }
-
-      if (A != nullptr) {
-        A->parent = grandparent_node;
-      }
-
-      if (B != nullptr) {
-        B->parent = parent_node;
-      }
-    }
-  }
-
-  void SplayTree::zig_zag(Node *x) {
-    Node *parent_node = x->parent;
-    Node *grandparent_node = parent_node->parent;
-
-    if (parent_node->right_child == x) {
-      Node *A = x->left_child;
-      Node *B = x->right_child;
-
-      x->parent = grandparent_node->parent;
-      x->left_child = parent_node;
-      x->right_child = grandparent_node;
-
-      parent_node->parent = x;
-      parent_node->right_child = A;
-
-      grandparent_node->parent = x;
-      grandparent_node->left_child = B;
-
-      if (x->parent != nullptr) {
-        if (x->parent->left_child == grandparent_node) {
-          x->parent->left_child = x;
-        } else {
-          x->parent->right_child = x;
-        }
-      }
-
-      if (A != nullptr) {
-        A->parent = parent_node;
-      }
-
-      if (B != nullptr) {
-        B->parent = grandparent_node;
-      }
-    } else {
-      Node *A = x->left_child;
-      Node *B = x->right_child;
-
-      x->parent = grandparent_node->parent;
-      x->left_child = grandparent_node;
-      x->right_child = parent_node;
-
-      parent_node->parent = x;
-      parent_node->left_child = B;
-
-      grandparent_node->parent = x;
-      grandparent_node->right_child = A;
-
-      if (x->parent != nullptr) {
-        if (x->parent->left_child == grandparent_node) {
-          x->parent->left_child = x;
-        } else {
-          x->parent->right_child = x;
-        }
-      }
-
-      if (A != nullptr) {
-        A->parent = grandparent_node;
-      }
-
-      if (B != nullptr) {
-        B->parent = parent_node;
-      }
-    }
   }
 
   void SplayTree::splay(Node *x) {
@@ -194,136 +18,275 @@ namespace itis {
       Node *grandparent_node = parent_node->parent;
       if (grandparent_node == nullptr) {
         zig(x);
-      }
-      else if (grandparent_node->left_child == parent_node && parent_node->left_child == x) {
+      } else if (grandparent_node->left == parent_node && parent_node->left == x) {
         zig_zig(x);
-      }
-      else if (grandparent_node->right_child == parent_node && parent_node->right_child == x) {
+      } else if (grandparent_node->right == parent_node && parent_node->right == x) {
         zig_zig(x);
-      }
-      else {
+      } else {
         zig_zag(x);
       }
     }
-    this->root = x;
+    this->way = x;
   }
 
-  Node *tree_max_key(Node *root) {
-    Node *curr = root;
-    while (curr->right_child != nullptr) {
-      curr = curr->right_child;
+  void SplayTree::zig(Node *vertex) {
+    Node *parent = vertex->parent;
+
+    if (parent->left == vertex) {
+
+      Node *turn = vertex->right;
+      vertex->parent = nullptr;
+      vertex->right = parent;
+      parent->parent = vertex;
+      parent->left = turn;
+      if (turn != nullptr)
+        turn->parent = parent;
+
+    } else {
+
+      Node *vertexA = vertex->left;
+      vertex->parent = nullptr;
+      vertex->left = parent;
+      parent->parent = vertex;
+      parent->right = vertexA;
+
+      if (vertexA != nullptr) {
+        vertexA->parent = parent;
+      }
     }
-    return curr;
   }
 
-  Node *tree_min_key(Node *subRoot) {
-    Node *curr = subRoot;
-    while (curr->left_child != nullptr) {
-      curr = curr->left_child;
-    }
-    return curr;
-  }
+  void SplayTree::zig_zig(Node *vertex) {
+    Node *parent = vertex->parent;
+    Node *grandparent = parent->parent;
 
-  void SplayTree::remove(int x) {
-    Node *del = find(x);
-    if (del == nullptr) {
-      return;
-    }
-    Node *L = del->left_child;
-    if (L == nullptr) {
-      root = del->right_child;
-      root->parent = nullptr;
-      delete del;
-      return;
-    }
-    while (L->right_child != nullptr) {
-      L = L->right_child;
-    }
-    if (del->right_child != nullptr) {
-      L->right_child = del->right_child;
-      del->right_child->parent = L;
-    }
-    root = del->left_child;
-    root->parent = nullptr;
-    delete del;
-  }
+    if (parent->left == vertex) {
+      Node *vertexA = vertex->right;
+      Node *vertexB = parent->right;
+      vertex->parent = grandparent->parent;
+      vertex->right = parent;
+      parent->parent = vertex;
+      parent->left = vertexA;
+      parent->right = grandparent;
+      grandparent->parent = parent;
+      grandparent->left = vertexB;
 
-  void SplayTree::insert(int x) {
-    if (root == nullptr) {
-      root = new Node(x);
-      return;
-    }
-    Node *curr = this->root;
-    while (curr != nullptr) {
-      if (x < curr->data) {
-        if (curr->left_child == nullptr) {
-          Node *new_node = new Node(x);
-          curr->left_child = new_node;
-          new_node->parent = curr;
-          splay(new_node);
-          this->root = new_node;
-          return;
+      if (vertex->parent != nullptr) {
+        if (vertex->parent->left == grandparent) {
+          vertex->parent->left = vertex;
+        } else {
+          vertex->parent->right = vertex;
         }
-        curr = curr->left_child;
+      }
+      if (vertexA != nullptr) {
+        vertexA->parent = parent;
+      }
+      if (vertexB != nullptr) {
+        vertexB->parent = grandparent;
+      }
 
-      } else if (x >= curr->data) {
-        if (curr->right_child == nullptr) {
-          Node *new_node = new Node(x);
-          curr->right_child = new_node;
-          new_node->parent = curr;
+    } else {
+      Node *vertexA = parent->left;
+      Node *vertexB = vertex->left;
+      vertex->parent = grandparent->parent;
+      vertex->left = parent;
+      parent->parent = vertex;
+      parent->left = grandparent;
+      parent->right = vertexB;
+      grandparent->parent = parent;
+      grandparent->right = vertexA;
+
+      if (vertex->parent != nullptr) {
+        if (vertex->parent->left == grandparent) {
+          vertex->parent->left = vertex;
+        } else {
+          vertex->parent->right = vertex;
+        }
+      }
+      if (vertexA != nullptr) {
+        vertexA->parent = grandparent;
+      }
+      if (vertexB != nullptr) {
+        vertexB->parent = parent;
+      }
+    }
+  }
+
+  void SplayTree::zig_zag(Node *vertex) {
+    Node *parent = vertex->parent;
+    Node *grandparent = parent->parent;
+
+    if (parent->right == vertex) {
+      Node *vertexA = vertex->left;
+      Node *vertexB = vertex->right;
+
+      vertex->parent = grandparent->parent;
+      vertex->left = parent;
+      vertex->right = grandparent;
+
+      parent->parent = vertex;
+      parent->right = vertexA;
+
+      grandparent->parent = vertex;
+      grandparent->left = vertexA;
+
+      if (vertex->parent != nullptr) {
+        if (vertex->parent->left == grandparent) {
+          vertex->parent->left = vertex;
+        } else {
+          vertex->parent->right = vertex;
+        }
+      }
+
+      if (vertexA != nullptr) {
+        vertexA->parent = parent;
+      }
+
+      if (vertexB != nullptr) {
+        vertexB->parent = grandparent;
+      }
+
+    } else {
+      Node *vertexA = vertex->left;
+      Node *vertexB = vertex->right;
+
+      vertex->parent = grandparent->parent;
+      vertex->left = grandparent;
+      vertex->right = parent;
+
+      parent->parent = vertex;
+      parent->left = vertexB;
+
+      grandparent->parent = vertex;
+      grandparent->right = vertexA;
+
+      if (vertex->parent != nullptr) {
+        if (vertex->parent->left == grandparent) {
+          vertex->parent->left = vertex;
+        } else {
+          vertex->parent->right = vertex;
+        }
+      }
+
+      if (vertexA != nullptr) {
+        vertexA->parent = grandparent;
+      }
+
+      if (vertexB != nullptr) {
+        vertexA->parent = parent;
+      }
+    }
+  }
+
+  /* Метод find. В нём производится поиск элемента по индексу.
+       - Если не существует такого индекса, то возвращает null. Если же нет, то поиск продолжаетя до тех пор,
+         пока не найдётся данный элемент по номеру */
+  Node *SplayTree::find(int index) {
+    Node *returning = nullptr;
+    Node *current = this->way;
+    Node *previous = nullptr;
+    while (current != nullptr) {
+      previous = current;
+      if (index < current->number) {
+        current = current->left;
+      } else if (index > current->number) {
+        current = current->right;
+      } else {
+        returning = current;
+        break;
+      }
+    }
+    if (returning != nullptr) {
+      splay(returning);
+    } else if (previous != nullptr) {
+      splay(previous);
+    }
+    return returning;
+  }
+
+  /* Метод insert. Действует по следующему алгоритму:
+       1) Если у дерева нет корня, корнем становится узел с этим числом
+       2) В противном случае сначала ищется место в дереве по правилу "Родитель больше нового узла, а потомок - меньше" */
+  void SplayTree::insert(int index) {
+    if (way == nullptr) {
+      way = new Node(index);
+      return;
+    }
+    Node *current = this->way;
+    while (current != nullptr) {
+      if (index < current->number) {
+        if (current->left == nullptr) {
+          Node *new_node = new Node(index);
+          current->left = new_node;
+          new_node->parent = current;
           splay(new_node);
-          this->root = new_node;
+          this->way = new_node;
           return;
         } else {
-          curr = curr->right_child;
+          current = current->left;
+        }
+      } else if (index >= current->number) {
+        if (current->right == nullptr) {
+          Node *new_node = new Node(index);
+          current->right = new_node;
+          new_node->parent = current;
+          splay(new_node);
+          this->way = new_node;
+          return;
+        } else {
+          current = current->right;
         }
       } else {
-        splay(curr);
+        splay(current);
         return;
       }
     }
   }
 
-  Node *SplayTree::find(int x) {
-    Node *ret = nullptr;
-    Node *curr = this->root;
-    Node *prev = nullptr;
-    while (curr != nullptr) {
-      prev = curr;
-      if (x < curr->data) {
-        curr = curr->left_child;
-      } else if (x > curr->data) {
-        curr = curr->right_child;
-      } else {
-        ret = curr;
-        break;
+  /* Метод remove. Действует по следующему алгоритму:
+       1) Если не существует узла по индексу, то алгоритм прекращает работу
+       2) Если узел существует, то алгоритм делает так, что потомки удаляемого узла становятся потомками родителей удаляемого узла */
+  void SplayTree::remove(int index) {
+    Node *deleting_node = find(index);
+    if (deleting_node != nullptr) {
+      Node *vertexL = deleting_node->left;
+      if (vertexL == nullptr) {
+        way = deleting_node->right;
+        way->parent = nullptr;
+        delete deleting_node;
+        return;
       }
+      while (vertexL->right != nullptr) {
+        vertexL = vertexL->right;
+      }
+      if (deleting_node->right != nullptr) {
+        vertexL->right = deleting_node->right;
+        deleting_node->right->parent = vertexL;
+      }
+      way = deleting_node->left;
+      way->parent = nullptr;
+      delete deleting_node;
     }
-    if (ret != nullptr) {
-      splay(ret);
-    } else if (prev != nullptr) {
-      splay(prev);
-    }
-    return ret;
   }
 
-  void SplayTree:: Print(Node *vertex) {
-    if (vertex->left_child != nullptr && vertex->right_child != nullptr) {
-      std::cout << vertex->data << ": " << vertex->left_child->data << ", " << vertex->right_child->data << std::endl;
-    } else if (vertex->left_child != nullptr) {
-      std::cout << vertex->data << ": " << vertex->left_child->data << std::endl;
-    } else if (vertex->right_child != nullptr) {
-      std::cout << vertex->data << ": " << vertex->right_child->data << std::endl;
+  /* В методе Clear происходит следующее:
+         1) Берётся узел о индексу
+         2) Осуществляется проверка: если у этого узла нет дочерних узлов, то он удаляется без дополнительных операций
+            В противном случае запускается рекурсия по удалению сначала ребёнка слева (если есть), а потом справа (если есть) */
+  void SplayTree::Clear(Node *index) {
+    if (index->left != nullptr || index->right != nullptr) {
+      if (index->left != nullptr && index->right == nullptr) {
+        Clear(index->left);
+        delete index;
+      } else {
+        Clear(index->left);
+      }
+      if (index->left == nullptr && index->right != nullptr) {
+        Clear(index->right);
+        delete index;
+      }
     } else {
-      std::cout << vertex->data << ": no children" << std::endl;
-    }
-    if (vertex->left_child != nullptr && vertex->right_child != nullptr) {
-      Print(vertex->left_child);
-      Print(vertex->right_child);
-    } else if (vertex->left_child != nullptr) {
-      Print(vertex->left_child);
-    } else if (vertex->right_child != nullptr) {
-      Print(vertex->right_child);
+      delete index;
     }
   }
 

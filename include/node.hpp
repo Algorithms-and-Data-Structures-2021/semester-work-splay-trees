@@ -2,13 +2,12 @@
 
 namespace itis {
   struct Node {
-   public:
-    int data;
-    Node *parent;
-    Node *left_child;
-    Node *right_child;
 
-    explicit Node(int node_key) : data(node_key), parent(nullptr), left_child(nullptr), right_child(nullptr) {
-    }
+    int number;
+    Node *parent;
+    Node *left;
+    Node *right;
+
+    explicit Node(int node_key) : number(node_key), parent(nullptr), left(nullptr), right(nullptr) {}
   };
-}  // namespace itis
+}

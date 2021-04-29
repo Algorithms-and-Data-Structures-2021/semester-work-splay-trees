@@ -20,7 +20,7 @@ int main() {
   int trials = 1;
   string files[1] = {"01"};
   SplayTree sTree;
-  for(string elem : files) {
+  for (string elem : files) {
     for (int i = 0; i < trials; i++) {
       string line = "1";
 
@@ -28,6 +28,7 @@ int main() {
       auto input_file = ifstream(path + "/insert/data(100).txt");
       // вместо "data(100).txt" указываете файл с нужным набором тестовых данных
 
+      //const auto time_point_before = chrono::steady_clock::now(); - Раскомментируйте, чтобы протестировать метод "insert"
       if (input_file) {
         while (!line.empty()) {
           getline(input_file, line);
@@ -37,14 +38,17 @@ int main() {
           sTree.insert(stoi(line));
         }
       }
+
+      //const auto time_point_after = chrono::steady_clock::now(); - Раскомментируйте, чтобы протестировать метод "insert"
+
       const auto time_point_before = chrono::steady_clock::now();
 
-      // тут вместо "insert" вызываете метод, который тестируете
-      sTree.insert(34524);
+      //sTree.find(18130158); - Должен работать за константное время
+      //sTree.remove(18130158); - Должен работать за константное время
 
       const auto time_point_after = chrono::steady_clock::now();
-      Node *curr = sTree.root;
-      sTree.Clear(curr);
+      Node *current = sTree.way;
+      sTree.Clear(current);
       input_file.close();
       const auto time_diff = time_point_after - time_point_before;
 

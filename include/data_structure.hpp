@@ -6,21 +6,20 @@ namespace itis {
 
   struct SplayTree {
    public:
-    Node *root;
+    Node *way;
 
-    static void zig(Node *x);
-    static void zig_zig(Node *x);
-    static void zig_zag(Node *x);
-    void splay(Node *x);
+    static void zig(Node *vertex);
+    static void zig_zig(Node *vertex);
+    static void zig_zag(Node *vertex);
+    void splay(Node *vertex);
 
     SplayTree();
-    explicit SplayTree(Node *x);
-    Node *find(int x);
-    void insert(int x);
-    void remove(int x);
-    void Clear(Node *x);
-    void Print(Node *x);
-    ~SplayTree() ;
+    explicit SplayTree(Node *structure_way);
+    Node *find(int index);
+    void insert(int index);
+    void remove(int index);
+    void Clear(Node *index);
+    ~SplayTree();
   };
 
-}  // namespace itis
+}
